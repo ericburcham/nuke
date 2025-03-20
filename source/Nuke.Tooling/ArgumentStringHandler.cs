@@ -80,13 +80,16 @@ public ref struct ArgumentStringHandler
 
     public string ToStringAndClear()
     {
-        return _builder.ToStringAndClear().TrimMatchingDoubleQuotes();
+        var value = _builder.ToStringAndClear();
+        return value.Length > 1 &&  value.IndexOf(value: '"', startIndex: 1) == value.Length - 1
+            ? value.TrimMatchingDoubleQuotes()
+            : value;
     }
 
     public Func<string, string> GetFilter()
     {
         var secretValues = _secretValues;
-        return x => secretValues.Aggregate(x, (arguments, value) => arguments.Replace(value, Arguments.Redacted));
+        return x => secretValues.Aggregate(x, (arguments, value) => arguments.Replace(value, "[REDACTED]"));
     }
 }
 #endif
